@@ -63,8 +63,7 @@ struct ContentView: View {
                             Button {
                                 flagTapped(number)
                             } label: {
-                                Image(countries[number])
-                                    .shadow(radius: 5)
+                                FlagImage(countries[number])
                             }
                         }
                     }
