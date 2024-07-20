@@ -30,7 +30,15 @@ struct ContentView: View {
     @State private var scoreMessage = ""
     @State private var score = 0
     @State private var answeredQuestions = 0
-        
+    
+    @State private var flag0animationAmount = 0.0
+    @State private var flag1animationAmount = 0.0
+    @State private var flag2animationAmount = 0.0
+    
+    @State private var flag0Opacity = 1.0
+    @State private var flag1opacity = 1.0
+    @State private var flag2opacity = 1.0
+    
     var body: some View {
         ZStack {
             
@@ -59,13 +67,47 @@ struct ContentView: View {
                         .fontWeight(.semibold)
                     
                     VStack(spacing: 15) {
-                        ForEach(0..<3) { number in
-                            Button {
-                                flagTapped(number)
-                            } label: {
-                                FlagImage(countries[number])
+                        Button {
+                            withAnimation() {
+                                flagTapped(0)
                             }
+                            
+                        } label: {
+                            FlagImage(countries[0])
                         }
+                        .rotation3DEffect(
+                            .degrees(flag0animationAmount),
+                            axis: (x: 0.0, y: 1.0, z: 0.0)
+                        )
+                        .opacity(flag0Opacity)
+                        
+                        Button {
+                            withAnimation() {
+                                flagTapped(1)
+                            }
+                            
+                        } label: {
+                            FlagImage(countries[1])
+                        }
+                        .rotation3DEffect(
+                            .degrees(flag1animationAmount),
+                            axis: (x: 0.0, y: 1.0, z: 0.0)
+                        )
+                        .opacity(flag1opacity)
+                        
+                        Button {
+                            withAnimation {
+                                flagTapped(2)
+                            }
+                            
+                        } label: {
+                            FlagImage(countries[2])
+                        }
+                        .rotation3DEffect(
+                            .degrees(flag2animationAmount),
+                            axis: (x: 0.0, y: 1.0, z: 0.0)
+                        )
+                        .opacity(flag2opacity)
                     }
                     .padding(.bottom, 40)
                     
@@ -97,8 +139,28 @@ struct ContentView: View {
             Text("Final score: \(score)")
         }
     }
-
+    
     func flagTapped(_ number: Int) {
+        
+        let selectedFlagAnimationAmount = 360.0
+        let otherFlagsOpacityAmount = 0.25
+        
+        switch number {
+        case 0:
+            flag0animationAmount += selectedFlagAnimationAmount
+            flag1opacity = otherFlagsOpacityAmount
+            flag2opacity = otherFlagsOpacityAmount
+        case 1:
+            flag1animationAmount += selectedFlagAnimationAmount
+            flag0Opacity = otherFlagsOpacityAmount
+            flag2opacity = otherFlagsOpacityAmount
+        case 2:
+            flag2animationAmount += selectedFlagAnimationAmount
+            flag0Opacity = otherFlagsOpacityAmount
+            flag1opacity = otherFlagsOpacityAmount
+        default: break
+        }
+        
         if number == correctAnswer {
             scoreTitle = "Correct"
             score += 1
@@ -108,8 +170,8 @@ struct ContentView: View {
         
         scoreMessage = "That's the flag of \(countries[number])"
         
-            showingScore = true
-            answeredQuestions += 1
+        showingScore = true
+        answeredQuestions += 1
     }
     
     func askQuestion() {
@@ -119,6 +181,11 @@ struct ContentView: View {
         }
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
+        withAnimation {
+            flag0Opacity = 1.0
+            flag1opacity = 1.0
+            flag2opacity = 1.0
+        }
     }
     
     func restartGame() {
